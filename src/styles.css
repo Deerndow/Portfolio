@@ -1,0 +1,279 @@
+:root {
+  --sky: #b9c7cf;
+  --lime: #b6e029;
+  --ink: #1f2a14;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: #0d1410;
+  font-family: "Courier New", ui-monospace, monospace;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* ---- Home stage: letterboxed 4:3 area that keeps art + overlays aligned ---- */
+.stage-wrap {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--sky);
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: min(100vw, calc(100vh * 4 / 3));
+  height: min(100vh, calc(100vw * 3 / 4));
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.35);
+}
+
+.stage__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---- Real tree cut-outs (visual only) ---- */
+.tree-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform, filter;
+  transition: transform 0.55s cubic-bezier(0.2, 0.85, 0.25, 1),
+    filter 0.55s ease;
+}
+
+/* subtle "coming out" — the tree leans toward you from its trunk base */
+.tree-img.is-active {
+  transform: perspective(1500px) rotateX(-7deg) scale(1.05);
+  filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.32));
+}
+
+/* ---- Hotspots ---- */
+.hit {
+  position: absolute;
+  z-index: 4;
+  cursor: pointer;
+}
+
+.navhit {
+  position: absolute;
+  z-index: 5;
+  cursor: pointer;
+}
+
+/* a soft lime underline confirms which word/tree is lit */
+.navhit::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 14%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--lime);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.navhit.is-active::after {
+  opacity: 0.95;
+  transform: scaleX(1);
+}
+
+/* ---- Loading screen (buq.ai logo) ---- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  animation: loader-in 0.25s ease both;
+}
+
+.logo {
+  position: relative;
+  aspect-ratio: 1222 / 629;
+  height: clamp(110px, 34vmin, 420px);
+}
+
+/* the real brand artwork */
+.logo__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* both phase layers are clipped to the logo's exact silhouette */
+.logo__drain,
+.logo__flood {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url(/art/logo.png) center / contain no-repeat;
+  mask: url(/art/logo.png) center / contain no-repeat;
+}
+
+.drain,
+.flood {
+  position: absolute;
+  left: -50%;
+  top: 0;
+  width: 200%;
+  height: 100%;
+}
+
+/* phase 1 — yellow covers everything, then drains downward off the logo */
+.drain {
+  animation: drain 2.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+
+.drain__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: -120%;
+  background: #c4e600;
+}
+
+.drain__wave {
+  position: absolute;
+  left: -10%;
+  top: -14%;
+  width: 120%;
+  height: 16%;
+  display: block;
+  animation: wave-x 0.9s linear infinite;
+}
+
+/* phase 2 — blue floods down from the top until the logo is fully blue */
+.flood {
+  transform: translateY(-30%);
+  animation: flood 2.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+
+.flood__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -120%;
+  height: 120%;
+  background: #1a2bf5;
+}
+
+.flood__wave {
+  position: absolute;
+  left: -10%;
+  top: 0;
+  width: 120%;
+  height: 16%;
+  display: block;
+  animation: wave-x 1.05s linear infinite;
+}
+
+@keyframes loader-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* hold fully yellow briefly, then drain away by ~45% to expose the real logo */
+@keyframes drain {
+  0%,
+  10% {
+    transform: translateY(0);
+  }
+  45%,
+  100% {
+    transform: translateY(120%);
+  }
+}
+
+/* blue holds off until ~60% (real logo lingers), then floods to full */
+@keyframes flood {
+  0%,
+  60% {
+    transform: translateY(-30%);
+  }
+  100% {
+    transform: translateY(110%);
+  }
+}
+
+/* gentle horizontal drift so each surface ripples like water */
+@keyframes wave-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-12.5%);
+  }
+}
+
+/* ---- Minimal inner pages ---- */
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8vw;
+  background: #f3efe6;
+  color: var(--ink);
+  font-family: "Courier New", monospace;
+  animation: loader-in 0.4s ease both;
+}
+
+.page h1 {
+  font-size: clamp(28px, 9vmin, 96px);
+  margin: 0 0 0.2em;
+  letter-spacing: 0.02em;
+}
+
+.page p {
+  max-width: 40ch;
+  opacity: 0.65;
+  line-height: 1.6;
+}
+
+.page__back {
+  position: fixed;
+  top: 6vmin;
+  left: 6vmin;
+  font: inherit;
+  font-weight: 700;
+  color: #2f6b1a;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.page__back:hover {
+  color: #4a9a1f;
+}
