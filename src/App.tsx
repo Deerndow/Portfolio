@@ -1,17 +1,20 @@
 import { Routes, Route } from "react-router-dom";
 import { LoadingProvider } from "./context/Loading";
 import Home from "./pages/Home";
-import Page from "./pages/Page";
+import About from "./pages/About";
+import Works from "./pages/Works";
+import Play from "./pages/Play";
+import Connect from "./pages/Connect";
 
 export default function App() {
   return (
     <LoadingProvider>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<Page title="about" />} />
-        <Route path="/works" element={<Page title="works" />} />
-        <Route path="/play" element={<Page title="play" />} />
-        <Route path="/connect" element={<Page title="connect" />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/works" element={<Works />} />
+        <Route path="/play" element={<Play />} />
+        <Route path="/connect" element={<Connect />} />
       </Routes>
     </LoadingProvider>
   );

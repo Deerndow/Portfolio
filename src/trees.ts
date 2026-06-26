@@ -1,54 +1,39 @@
-// The 4 buttons / trees / pages, ordered left -> right to match the artwork.
-// All geometry is expressed as % of the 4:3 stage (= the Illustrator artboard),
-// derived directly from the .ai element bounds so overlays line up pixel-perfect.
+// The 4 nav words / trees / pages, ordered left -> right to match the artwork.
+// Geometry is % of the full-bleed bg stage, eyeballed from BG.png's 4 trees.
 
 export interface TreeEntry {
   label: string;
   route: string;
-  img: string;
-  // The real nav word's horizontal slice (over the baked "[ ... ]" text).
-  nav: { left: number; width: number };
-  // Hover/click hit area covering the drawn tree.
+  // hover/click hit area over the drawn tree
   hit: { left: number; top: number; width: number; height: number };
-  // Trunk-base anchor the tree leans out from.
-  origin: { x: number; y: number };
+  // the 3D tree cut-out, placed exactly over the drawn tree.
+  // left/width are % of stage width; bottom is % of stage height (trunk base).
+  img: { src: string; left: number; width: number; bottom: number };
 }
-
-// Shared vertical band of the baked nav text (slightly padded for easy hover).
-export const NAV_TOP = 6.4;
-export const NAV_HEIGHT = 4.6;
 
 export const TREES: TreeEntry[] = [
   {
     label: "ABOUT",
     route: "/about",
-    img: "/art/t1.png",
-    nav: { left: 8.26, width: 5.98 },
-    hit: { left: 0.5, top: 27.5, width: 29.2, height: 57 },
-    origin: { x: 15.1, y: 84.5 },
+    hit: { left: 2, top: 27, width: 21, height: 55 },
+    img: { src: "/art/tree1.png", left: 1.1, width: 24.9, bottom: 18.7 },
   },
   {
-    label: "Works",
+    label: "WORKS",
     route: "/works",
-    img: "/art/t2.png",
-    nav: { left: 14.9, width: 5.98 },
-    hit: { left: 28.8, top: 26.3, width: 27.4, height: 50.9 },
-    origin: { x: 42.5, y: 77.2 },
+    hit: { left: 23, top: 26, width: 21, height: 51 },
+    img: { src: "/art/tree2.png", left: 23.7, width: 23.5, bottom: 23.7 },
   },
   {
-    label: "Play",
+    label: "PLAY",
     route: "/play",
-    img: "/art/t3.png",
-    nav: { left: 21.54, width: 5.31 },
-    hit: { left: 56.3, top: 28.3, width: 25.4, height: 48.2 },
-    origin: { x: 69.0, y: 76.5 },
+    hit: { left: 45, top: 28, width: 23, height: 57 },
+    img: { src: "/art/tree3.png", left: 44.6, width: 26.6, bottom: 22.5 },
   },
   {
-    label: "Connect",
+    label: "CONNECT",
     route: "/connect",
-    img: "/art/t4.png",
-    nav: { left: 27.52, width: 7.3 },
-    hit: { left: 80.75, top: 20.3, width: 19.3, height: 57.3 },
-    origin: { x: 90.4, y: 77.6 },
+    hit: { left: 68, top: 26, width: 26, height: 52 },
+    img: { src: "/art/tree4.png", left: 70.9, width: 24.0, bottom: 23.2 },
   },
 ];

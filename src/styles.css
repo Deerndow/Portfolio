@@ -1,7 +1,19 @@
+@font-face {
+  font-family: "Dachi";
+  src: url(/fonts/dachi.otf) format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --sky: #b9c7cf;
-  --lime: #b6e029;
-  --ink: #1f2a14;
+  --cream: #eae6df;
+  --font: "Dachi", "Courier New", ui-monospace, monospace;
+  --ink: #1d1e22;
+  --slate: #4e5a65;
+  --pink: #ffc5d3;
+  --lime: #d4ff00;
+  --blue: #0033ff;
 }
 
 * {
@@ -17,28 +29,34 @@ body,
 }
 
 body {
-  background: #0d1410;
-  font-family: "Courier New", ui-monospace, monospace;
+  background: var(--ink);
+  font-family: var(--font);
   color: var(--ink);
   overflow: hidden;
 }
 
-/* ---- Home stage: letterboxed 4:3 area that keeps art + overlays aligned ---- */
+/* ---- Home stage: the artwork fills the whole viewport (cover, no framing) ---- */
 .stage-wrap {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
-  background: var(--sky);
+  overflow: hidden;
+  background: var(--ink);
 }
 
 .stage {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  width: min(100vw, calc(100vh * 4 / 3));
-  height: min(100vh, calc(100vw * 3 / 4));
-  overflow: hidden;
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.35);
+  /* Pin the artwork to the BOTTOM, centered horizontally, so vertical
+     overflow is always trimmed from the TOP and side overflow is split
+     evenly. (Absolute positioning is reliable for an oversized element;
+     grid `end` alignment was anchoring the top instead.) */
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  aspect-ratio: 4648 / 3025;
+  /* max() => the stage is at least as big as the viewport in both axes,
+     so the image always covers; the overflow is cropped by .stage-wrap. */
+  width: max(100vw, calc(100vh * 4648 / 3025));
+  height: max(100vh, calc(100vw * 3025 / 4648));
 }
 
 .stage__bg {
@@ -47,61 +65,92 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* keep the bottom of the artwork; trim from the top if it must crop */
+  object-position: center bottom;
   user-select: none;
   -webkit-user-drag: none;
 }
 
-/* ---- Real tree cut-outs (visual only) ---- */
-.tree-img {
+/* ---- 3D tree cut-out, placed exactly over each drawn tree ---- */
+.tree3d {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   pointer-events: none;
-  z-index: 2;
-  will-change: transform, filter;
-  transition: transform 0.55s cubic-bezier(0.2, 0.85, 0.25, 1),
-    filter 0.55s ease;
+  opacity: 0;
+  z-index: 3;
+  transform-origin: 50% 100%; /* scale from the trunk base, planted on the hill */
+  transform: perspective(1200px) translateZ(0) scale(0.98);
+  will-change: transform, opacity;
+  transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1),
+    opacity 0.3s ease;
 }
 
-/* subtle "coming out" — the tree leans toward you from its trunk base */
-.tree-img.is-active {
-  transform: perspective(1500px) rotateX(-7deg) scale(1.05);
-  filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.32));
+/* come forward: the tree pushes toward the viewer (not upward) and grows a touch */
+.tree3d.is-active {
+  opacity: 1;
+  transform: perspective(1200px) translateZ(120px) scale(1.05);
 }
 
-/* ---- Hotspots ---- */
+/* ---- Tree hotspots ---- */
 .hit {
   position: absolute;
   z-index: 4;
   cursor: pointer;
 }
 
-.navhit {
-  position: absolute;
-  z-index: 5;
-  cursor: pointer;
+/* ---- Nav: the original logo + bracketed buttons beside it ---- */
+.nav {
+  /* pinned to the VIEWPORT top-left so it stays visible even though the
+     top of the artwork gets cropped */
+  position: fixed;
+  top: 4vmin;
+  left: 3.5vw;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.9ch;
+  font-weight: 700;
+  font-size: clamp(12px, 2vmin, 20px);
+  letter-spacing: 0.05em;
 }
 
-/* a soft lime underline confirms which word/tree is lit */
-.navhit::after {
-  content: "";
-  position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: 14%;
-  height: 2px;
-  border-radius: 2px;
+/* logo tinted solid neon-yellow (silhouette used as a mask) — no blue */
+.nav__logo {
+  height: clamp(24px, 4vmin, 44px);
+  aspect-ratio: 1222 / 629;
+  display: block;
+  margin-right: 0.5ch;
   background: var(--lime);
-  opacity: 0;
-  transform: scaleX(0.4);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  -webkit-mask: url(/art/logo.png) center / contain no-repeat;
+  mask: url(/art/logo.png) center / contain no-repeat;
 }
 
-.navhit.is-active::after {
-  opacity: 0.95;
-  transform: scaleX(1);
+.nav__item {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--lime);
+  padding: 0.15em 0.1em;
+  text-shadow: 0 1px 2px rgba(29, 30, 34, 0.6);
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+/* brackets are the same colour + opacity as the word */
+.nav__item::before {
+  content: "[ ";
+  opacity: 1;
+}
+.nav__item::after {
+  content: " ]";
+  opacity: 1;
+}
+
+.nav__item:hover,
+.nav__item.is-active {
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 /* ---- Loading screen (buq.ai logo) ---- */
@@ -111,90 +160,23 @@ body {
   z-index: 50;
   display: grid;
   place-items: center;
-  background: #ffffff;
+  background: var(--cream);
   animation: loader-in 0.25s ease both;
 }
 
+/* the logo silhouette masks the lime base + blue slime drawn in the SVG */
 .logo {
   position: relative;
-  aspect-ratio: 1222 / 629;
+  aspect-ratio: 1957 / 969;
   height: clamp(110px, 34vmin, 420px);
+  -webkit-mask: url(/art/logo-load.png) center / contain no-repeat;
+  mask: url(/art/logo-load.png) center / contain no-repeat;
 }
 
-/* the real brand artwork */
-.logo__art {
-  position: absolute;
-  inset: 0;
+.logo svg {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-}
-
-/* both phase layers are clipped to the logo's exact silhouette */
-.logo__drain,
-.logo__flood {
-  position: absolute;
-  inset: 0;
-  -webkit-mask: url(/art/logo.png) center / contain no-repeat;
-  mask: url(/art/logo.png) center / contain no-repeat;
-}
-
-.drain,
-.flood {
-  position: absolute;
-  left: -50%;
-  top: 0;
-  width: 200%;
-  height: 100%;
-}
-
-/* phase 1 — yellow covers everything, then drains downward off the logo */
-.drain {
-  animation: drain 2.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-}
-
-.drain__body {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: -120%;
-  background: #c4e600;
-}
-
-.drain__wave {
-  position: absolute;
-  left: -10%;
-  top: -14%;
-  width: 120%;
-  height: 16%;
-  display: block;
-  animation: wave-x 0.9s linear infinite;
-}
-
-/* phase 2 — blue floods down from the top until the logo is fully blue */
-.flood {
-  transform: translateY(-30%);
-  animation: flood 2.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-}
-
-.flood__body {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -120%;
-  height: 120%;
-  background: #1a2bf5;
-}
-
-.flood__wave {
-  position: absolute;
-  left: -10%;
-  top: 0;
-  width: 120%;
-  height: 16%;
-  display: block;
-  animation: wave-x 1.05s linear infinite;
 }
 
 @keyframes loader-in {
@@ -203,77 +185,400 @@ body {
   }
 }
 
-/* hold fully yellow briefly, then drain away by ~45% to expose the real logo */
-@keyframes drain {
-  0%,
-  10% {
-    transform: translateY(0);
-  }
-  45%,
-  100% {
-    transform: translateY(120%);
-  }
-}
-
-/* blue holds off until ~60% (real logo lingers), then floods to full */
-@keyframes flood {
-  0%,
-  60% {
-    transform: translateY(-30%);
-  }
-  100% {
-    transform: translateY(110%);
-  }
-}
-
-/* gentle horizontal drift so each surface ripples like water */
-@keyframes wave-x {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-12.5%);
-  }
-}
-
-/* ---- Minimal inner pages ---- */
+/* ---- Inner pages: cream canvas, full home energy, palette-only ---- */
 .page {
   position: fixed;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 8vw;
-  background: #f3efe6;
+  overflow-y: auto;
+  background: var(--cream);
   color: var(--ink);
-  font-family: "Courier New", monospace;
+  font-family: var(--font);
   animation: loader-in 0.4s ease both;
+  --accent: var(--blue);
+}
+.page--pink {
+  --accent: var(--pink);
+}
+.page--lime {
+  --accent: var(--lime);
+}
+.page--blue {
+  --accent: var(--blue);
+}
+.page--slate {
+  --accent: var(--slate);
 }
 
-.page h1 {
-  font-size: clamp(28px, 9vmin, 96px);
-  margin: 0 0 0.2em;
-  letter-spacing: 0.02em;
-}
-
-.page p {
-  max-width: 40ch;
-  opacity: 0.65;
-  line-height: 1.6;
+/* top bar: bracketed back, wordmark, page index — sticks while you scroll */
+.page__bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3.5vmin 6vmin;
+  font-weight: 700;
+  font-size: clamp(12px, 1.8vmin, 18px);
+  letter-spacing: 0.05em;
+  background: linear-gradient(var(--cream) 62%, rgba(234, 230, 223, 0));
 }
 
 .page__back {
-  position: fixed;
-  top: 6vmin;
-  left: 6vmin;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45ch;
+  line-height: 1;
   font: inherit;
   font-weight: 700;
-  color: #2f6b1a;
+  letter-spacing: inherit;
+  color: var(--blue);
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0.2em 0.1em;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+/* brackets are the same colour + opacity as the word */
+.page__back .bracket {
+  opacity: 1;
+}
+.page__back:hover {
+  color: var(--ink);
+  transform: translateX(-3px);
 }
 
-.page__back:hover {
-  color: #4a9a1f;
+.page__logo-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  line-height: 0;
+  transition: transform 0.18s ease;
+}
+.page__logo-btn:hover {
+  transform: scale(1.06);
+}
+.page__logo {
+  height: clamp(20px, 3.2vmin, 34px);
+  width: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.page__index {
+  color: var(--slate);
+}
+
+.page__body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3vmin 6vmin 14vmin;
+}
+
+.page__title {
+  font-size: clamp(28px, 9vmin, 96px);
+  margin: 0 0 0.2em;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.page__lead {
+  max-width: 32ch;
+  font-size: clamp(16px, 2.4vmin, 26px);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ---- ABOUT ---- */
+.about__intro {
+  margin-bottom: 6vmin;
+}
+.about__portrait {
+  margin: 0 0 6vmin;
+  aspect-ratio: 3 / 2;
+  max-width: 420px;
+  display: grid;
+  place-items: center;
+  background: var(--slate);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.about__portrait:hover {
+  transform: rotate(-2deg) scale(1.02);
+  background: var(--blue);
+}
+.about__cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4vmin;
+  max-width: 72ch;
+  margin-bottom: 5vmin;
+  line-height: 1.65;
+}
+.about__cols p {
+  margin: 0;
+}
+.about__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7ch;
+  font-weight: 700;
+  padding: 0.55em 1.1em;
+  background: var(--ink);
+  color: var(--lime);
+  margin-bottom: 4vmin;
+}
+.about__status .dot {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--lime);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8ch;
+  padding: 0;
+  margin: 0;
+}
+.chip {
+  font-weight: 700;
+  padding: 0.4em 0.9em;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  cursor: default;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.chip:hover {
+  transform: translateY(-3px) rotate(-3deg);
+  background: var(--pink);
+}
+.chip:nth-child(3n):hover {
+  background: var(--lime);
+}
+.chip:nth-child(3n + 1):hover {
+  background: var(--blue);
+  color: var(--cream);
+}
+
+/* ---- WORKS: typographic index that color-floods per row ---- */
+.works__head {
+  margin-bottom: 4vmin;
+}
+.index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+}
+.index__row {
+  border-bottom: 2px solid var(--ink);
+}
+.index__link {
+  display: grid;
+  grid-template-columns: 3ch 1fr auto auto 2ch;
+  align-items: center;
+  gap: 2ch;
+  padding: 0.65em 0.4em;
+  text-decoration: none;
+  color: var(--ink);
+  transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+}
+.index__n {
+  color: var(--slate);
+  font-weight: 700;
+}
+.index__title {
+  font-size: clamp(22px, 5vmin, 56px);
+  font-weight: 700;
+  line-height: 1;
+  /* match the connect labels: nudge the glyph down to optically centre it
+     between the row's divider lines */
+  transform: translateY(0.13em);
+}
+.index__tag,
+.index__year {
+  color: var(--slate);
+  letter-spacing: 0.04em;
+}
+.index__arrow {
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.index__row:hover .index__link {
+  background: var(--lime);
+  padding-left: 1.2em;
+}
+.index__row:hover .index__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+.index__row:nth-child(2n):hover .index__link {
+  background: var(--pink);
+}
+.index__row:nth-child(3n):hover .index__link {
+  background: var(--blue);
+  color: var(--cream);
+}
+.index__row:nth-child(3n):hover .index__n,
+.index__row:nth-child(3n):hover .index__tag,
+.index__row:nth-child(3n):hover .index__year {
+  color: var(--cream);
+}
+
+/* ---- PLAY: color-block toy tiles ---- */
+.play__head {
+  margin-bottom: 2vmin;
+}
+.toys {
+  list-style: none;
+  margin: 5vmin 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2vmin;
+}
+.toy button {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 3px solid var(--ink);
+  background: var(--cream);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  padding: 1.2em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.toy__label {
+  font-size: clamp(20px, 3.4vmin, 34px);
+  font-weight: 700;
+}
+.toy__note {
+  color: var(--slate);
+}
+.toy button:hover {
+  transform: translateY(-6px) rotate(-2deg);
+}
+.toy button:hover .toy__note {
+  color: inherit;
+}
+.toy--pink button:hover {
+  background: var(--pink);
+}
+.toy--lime button:hover {
+  background: var(--lime);
+}
+.toy--blue button:hover {
+  background: var(--blue);
+  color: var(--cream);
+}
+.toy--slate button:hover {
+  background: var(--slate);
+  color: var(--cream);
+}
+
+/* ---- CONNECT: oversized contact rows ---- */
+.connect__head {
+  margin-bottom: 2vmin;
+}
+.links {
+  list-style: none;
+  margin: 5vmin 0 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+}
+.links__row {
+  border-bottom: 2px solid var(--ink);
+}
+.links__link {
+  display: grid;
+  grid-template-columns: 1fr auto 2ch;
+  align-items: center;
+  gap: 2ch;
+  padding: 0.55em 0.4em;
+  text-decoration: none;
+  color: var(--ink);
+  transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+}
+.links__label {
+  font-size: clamp(28px, 7vmin, 84px);
+  font-weight: 700;
+  line-height: 1;
+  /* Dachi sits high in its line box (empty descent below); nudge the glyph
+     down so it optically centres between the row's divider lines */
+  transform: translateY(0.13em);
+}
+.links__value {
+  color: var(--slate);
+  align-self: center;
+}
+.links__arrow {
+  opacity: 0;
+  align-self: center;
+  transform: translate(-6px, 6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.links__row:hover .links__link {
+  background: var(--blue);
+  color: var(--cream);
+  padding-left: 1em;
+}
+.links__row:hover .links__value {
+  color: var(--cream);
+}
+.links__row:hover .links__arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+.links__row:nth-child(2n):hover .links__link {
+  background: var(--pink);
+  color: var(--ink);
+}
+.links__row:nth-child(2n):hover .links__value {
+  color: var(--ink);
+}
+.connect__foot {
+  margin-top: 5vmin;
+  color: var(--slate);
+  letter-spacing: 0.08em;
+}
+
+/* ---- Inner-page responsive ---- */
+@media (max-width: 720px) {
+  .about__cols {
+    grid-template-columns: 1fr;
+  }
+  .toys {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .index__link {
+    grid-template-columns: 2.4ch 1fr 2ch;
+  }
+  .index__tag,
+  .index__year {
+    display: none;
+  }
+  .links__link {
+    grid-template-columns: 1fr 2ch;
+  }
+  .links__value {
+    display: none;
+  }
 }
