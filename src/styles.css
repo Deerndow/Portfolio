@@ -171,15 +171,13 @@ body {
   text-transform: uppercase;
 }
 
-/* logo tinted solid neon-yellow (silhouette used as a mask) — no blue */
 .nav__logo {
   height: clamp(26px, 4vmin, 46px);
-  aspect-ratio: 1222 / 629;
+  width: auto;
   flex: 0 0 auto;
   display: block;
-  background: var(--lime);
-  -webkit-mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
-  mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .nav__links {

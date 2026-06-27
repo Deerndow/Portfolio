@@ -15,6 +15,8 @@ export default function LoadingScreen() {
   const dropB = useRef<SVGCircleElement>(null);
 
   useEffect(() => {
+    document.getElementById("boot-loader")?.remove();
+
     let raf = 0;
     const start = performance.now();
 
