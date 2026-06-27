@@ -419,7 +419,9 @@ body {
 
 .page__lead {
   max-width: 32ch;
+  font-family: var(--text-font);
   font-size: clamp(16px, 2.4vmin, 26px);
+  font-weight: 650;
   line-height: 1.45;
   margin: 0;
 }
@@ -451,6 +453,9 @@ body {
   gap: 4vmin;
   max-width: 72ch;
   margin-bottom: 5vmin;
+  font-family: var(--text-font);
+  font-size: clamp(15px, 1.7vmin, 18px);
+  font-weight: 550;
   line-height: 1.65;
 }
 .about__cols p {
@@ -460,6 +465,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.7ch;
+  font-family: var(--text-font);
   font-weight: 700;
   padding: 0.55em 1.1em;
   background: var(--ink);
@@ -487,6 +493,7 @@ body {
   margin: 0;
 }
 .chip {
+  font-family: var(--text-font);
   font-weight: 700;
   padding: 0.4em 0.9em;
   border: 2px solid var(--ink);
