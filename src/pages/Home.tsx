@@ -3,6 +3,8 @@ import { TREES } from "../trees";
 import { useLoading } from "../context/Loading";
 import { playPop, initSound } from "../sound";
 
+const bgSrc = `${import.meta.env.BASE_URL}art/bg.png`;
+
 export default function Home() {
   // Which tree/word is currently "lit". Shared so hovering the nav word OR the
   // tree itself activates the matching pair.
@@ -30,7 +32,7 @@ export default function Home() {
     <div className="stage-wrap">
       <div className="stage">
         {/* raw artwork, full-bleed */}
-        <img className="stage__bg" src="/art/bg.png" alt="3ΛΛ forest" />
+        <img className="stage__bg" src={bgSrc} alt="3ΛΛ forest" />
 
         {/* 3D tree cut-outs placed exactly over the drawn trees; they pop on hover */}
         {TREES.map((t, i) => (

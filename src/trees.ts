@@ -11,29 +11,31 @@ export interface TreeEntry {
   img: { src: string; left: number; width: number; bottom: number };
 }
 
+const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 export const TREES: TreeEntry[] = [
   {
     label: "ABOUT",
     route: "/about",
     hit: { left: 2, top: 27, width: 21, height: 55 },
-    img: { src: "/art/tree1.png", left: 1.1, width: 24.9, bottom: 18.7 },
+    img: { src: asset("art/tree1.png"), left: 1.1, width: 24.9, bottom: 18.7 },
   },
   {
     label: "WORKS",
     route: "/works",
     hit: { left: 23, top: 26, width: 21, height: 51 },
-    img: { src: "/art/tree2.png", left: 23.7, width: 23.5, bottom: 23.7 },
+    img: { src: asset("art/tree2.png"), left: 23.7, width: 23.5, bottom: 23.7 },
   },
   {
     label: "PLAY",
     route: "/play",
     hit: { left: 45, top: 28, width: 23, height: 57 },
-    img: { src: "/art/tree3.png", left: 44.6, width: 26.6, bottom: 22.5 },
+    img: { src: asset("art/tree3.png"), left: 44.6, width: 26.6, bottom: 22.5 },
   },
   {
     label: "CONNECT",
     route: "/connect",
     hit: { left: 68, top: 26, width: 26, height: 52 },
-    img: { src: "/art/tree4.png", left: 70.9, width: 24.0, bottom: 23.2 },
+    img: { src: asset("art/tree4.png"), left: 70.9, width: 24.0, bottom: 23.2 },
   },
 ];

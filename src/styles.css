@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Dachi";
-  src: url(/fonts/dachi.otf) format("opentype");
+  src: url("/Portfolio/fonts/dachi.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -178,8 +178,8 @@ body {
   flex: 0 0 auto;
   display: block;
   background: var(--lime);
-  -webkit-mask: url(/art/logo.png) center / contain no-repeat;
-  mask: url(/art/logo.png) center / contain no-repeat;
+  -webkit-mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
+  mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
 }
 
 .nav__links {
@@ -303,8 +303,8 @@ body {
   position: relative;
   aspect-ratio: 1957 / 969;
   height: clamp(110px, 34vmin, 420px);
-  -webkit-mask: url(/art/logo-load.png) center / contain no-repeat;
-  mask: url(/art/logo-load.png) center / contain no-repeat;
+  -webkit-mask: url("/Portfolio/art/logo-load.png") center / contain no-repeat;
+  mask: url("/Portfolio/art/logo-load.png") center / contain no-repeat;
 }
 
 .logo svg {

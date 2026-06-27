@@ -6,6 +6,8 @@ import { useLoading } from "../context/Loading";
 // page index. Each page passes an accent so its hovers stay on-palette.
 type Accent = "pink" | "lime" | "blue" | "slate";
 
+const logoSrc = `${import.meta.env.BASE_URL}art/logo-blue.png`;
+
 export default function PageShell({
   accent,
   index,
@@ -29,7 +31,7 @@ export default function PageShell({
           onClick={() => go("/")}
           aria-label="home"
         >
-          <img className="page__logo" src="/art/logo-blue.png" alt="3AΛ" />
+          <img className="page__logo" src={logoSrc} alt="3AΛ" />
         </button>
         <span className="page__index">{index}</span>
       </header>
