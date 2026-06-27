@@ -18,9 +18,8 @@ const Ctx = createContext<LoadingCtx>({ go: () => {} });
 
 export const useLoading = () => useContext(Ctx);
 
-const LOADING_MS = 2200;
-const INITIAL_MIN_MS = 850;
-const INITIAL_MAX_MS = 3500;
+const LOADING_MS = 2400;
+const INITIAL_FILL_MS = 2400;
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 const HOME_ASSETS = [
@@ -41,34 +40,28 @@ const preloadImage = (src: string) =>
     img.src = src;
   });
 
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+
+const waitForFonts = () => document.fonts?.ready.then(() => undefined) ?? wait(0);
+
 export function LoadingProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const started = performance.now();
     let cancelled = false;
 
-    const finish = () => {
-      if (cancelled) return;
-      const elapsed = performance.now() - started;
-      window.setTimeout(
-        () => {
-          if (!cancelled) setLoading(false);
-        },
-        Math.max(0, INITIAL_MIN_MS - elapsed)
-      );
-    };
-
-    const timeout = window.setTimeout(finish, INITIAL_MAX_MS);
-    Promise.all(HOME_ASSETS.map(preloadImage)).then(() => {
-      window.clearTimeout(timeout);
-      finish();
+    Promise.all([
+      ...HOME_ASSETS.map(preloadImage),
+      waitForFonts(),
+      wait(INITIAL_FILL_MS),
+    ]).then(() => {
+      if (!cancelled) setLoading(false);
     });
 
     return () => {
       cancelled = true;
-      window.clearTimeout(timeout);
     };
   }, []);
 
