@@ -93,7 +93,10 @@ export default function Home() {
 
       <header className="home-hero" aria-label="Portfolio introduction">
         <p className="home-hero__kicker">Portfolio / 2026</p>
-        <h1 className="home-hero__title">Digital design with a little bite.</h1>
+        <h1 className="home-hero__title">
+          Digital design with a <span className="home-hero__tight">little</span>{" "}
+          bite.
+        </h1>
         <p className="home-hero__copy">
           Selected work, experiments, and contact paths tucked into the forest.
         </p>
