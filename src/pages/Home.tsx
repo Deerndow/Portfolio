@@ -4,7 +4,6 @@ import { useLoading } from "../context/Loading";
 import { playPop, initSound } from "../sound";
 
 const bgSrc = `${import.meta.env.BASE_URL}art/bg.png`;
-const logoSrc = `${import.meta.env.BASE_URL}art/logo.png`;
 
 export default function Home() {
   // Which tree/word is currently "lit". Shared so hovering the nav word OR the
@@ -75,7 +74,7 @@ export default function Home() {
       {/* nav lives OUTSIDE .stage (which is transformed) so it can pin to the
           viewport top-left and never gets cropped with the artwork */}
       <nav className="nav">
-        <img className="nav__logo" src={logoSrc} alt="3ΛΛ" />
+        <span className="nav__logo" role="img" aria-label="3ΛΛ" />
         <div className="nav__links" aria-label="Primary">
           {TREES.map((t, i) => (
             <button

@@ -173,11 +173,12 @@ body {
 
 .nav__logo {
   height: clamp(26px, 4vmin, 46px);
-  width: auto;
+  aspect-ratio: 1222 / 629;
   flex: 0 0 auto;
   display: block;
-  user-select: none;
-  -webkit-user-drag: none;
+  background: var(--lime);
+  -webkit-mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
+  mask: url("/Portfolio/art/logo.png") center / contain no-repeat;
 }
 
 .nav__links {

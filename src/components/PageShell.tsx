@@ -6,7 +6,7 @@ import { useLoading } from "../context/Loading";
 // page index. Each page passes an accent so its hovers stay on-palette.
 type Accent = "pink" | "lime" | "blue" | "slate";
 
-const logoSrc = `${import.meta.env.BASE_URL}art/logo.png`;
+const logoSrc = `${import.meta.env.BASE_URL}art/logo-blue.png`;
 
 export default function PageShell({
   accent,
