@@ -73,19 +73,37 @@ export default function Home() {
           viewport top-left and never gets cropped with the artwork */}
       <nav className="nav">
         <span className="nav__logo" role="img" aria-label="3ΛΛ" />
-        {TREES.map((t, i) => (
-          <button
-            key={t.label}
-            className={`nav__item${active === i ? " is-active" : ""}`}
-            onMouseEnter={() => activate(i)}
-            onMouseLeave={() => setActive((c) => (c === i ? null : c))}
-            onPointerDown={() => press(i)}
-            onClick={() => go(t.route)}
-          >
-            {t.label}
-          </button>
-        ))}
+        <div className="nav__links" aria-label="Primary">
+          {TREES.map((t, i) => (
+            <button
+              key={t.label}
+              className={`nav__item${active === i ? " is-active" : ""}`}
+              onMouseEnter={() => activate(i)}
+              onMouseLeave={() => setActive((c) => (c === i ? null : c))}
+              onPointerDown={() => press(i)}
+              onClick={() => go(t.route)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </nav>
+
+      <header className="home-hero" aria-label="Portfolio introduction">
+        <p className="home-hero__kicker">Portfolio / 2026</p>
+        <h1 className="home-hero__title">Digital design with a little bite.</h1>
+        <p className="home-hero__copy">
+          Selected work, experiments, and contact paths tucked into the forest.
+        </p>
+      </header>
+
+      <div className="home-index" aria-hidden="true">
+        {TREES.map((t, i) => (
+          <span key={t.label} className={active === i ? "is-active" : ""}>
+            0{i + 1} {t.label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

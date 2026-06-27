@@ -8,7 +8,10 @@
 
 :root {
   --cream: #eae6df;
-  --font: "Dachi", "Courier New", ui-monospace, monospace;
+  --display-font: "Dachi", "Courier New", ui-monospace, monospace;
+  --text-font: "Avenir Next", Avenir, "Segoe UI", Inter, ui-sans-serif,
+    system-ui, sans-serif;
+  --font: var(--display-font);
   --ink: #1d1e22;
   --slate: #4e5a65;
   --pink: #ffc5d3;
@@ -41,6 +44,26 @@ body {
   inset: 0;
   overflow: hidden;
   background: var(--ink);
+  isolation: isolate;
+}
+
+.stage-wrap::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+      90deg,
+      rgba(29, 30, 34, 0.78) 0%,
+      rgba(29, 30, 34, 0.34) 28%,
+      rgba(29, 30, 34, 0.02) 58%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(29, 30, 34, 0.46) 0%,
+      rgba(29, 30, 34, 0) 36%
+    );
 }
 
 .stage {
@@ -79,16 +102,40 @@ body {
   opacity: 0;
   z-index: 3;
   transform-origin: 50% 100%; /* scale from the trunk base, planted on the hill */
-  transform: perspective(1200px) translateZ(0) scale(0.98);
-  will-change: transform, opacity;
+  transform: perspective(1200px) translate3d(0, 0, 0) scale(0.98);
+  filter: drop-shadow(0 20px 18px rgba(29, 30, 34, 0));
+  -webkit-mask-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.08) 2%,
+    rgba(0, 0, 0, 0.24) 5%,
+    rgba(0, 0, 0, 0.52) 9%,
+    rgba(0, 0, 0, 0.78) 14%,
+    rgba(0, 0, 0, 0.94) 20%,
+    #000 28%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.08) 2%,
+    rgba(0, 0, 0, 0.24) 5%,
+    rgba(0, 0, 0, 0.52) 9%,
+    rgba(0, 0, 0, 0.78) 14%,
+    rgba(0, 0, 0, 0.94) 20%,
+    #000 28%,
+    #000 100%
+  );
+  will-change: transform, opacity, filter;
   transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1),
-    opacity 0.3s ease;
+    opacity 0.3s ease, filter 0.3s ease;
 }
 
 /* come forward: the tree pushes toward the viewer (not upward) and grows a touch */
 .tree3d.is-active {
   opacity: 1;
-  transform: perspective(1200px) translateZ(120px) scale(1.05);
+  transform: perspective(1200px) translate3d(0, -0.45%, 72px) scale(1.025);
+  filter: drop-shadow(0 26px 20px rgba(29, 30, 34, 0.28));
 }
 
 /* ---- Tree hotspots ---- */
@@ -98,31 +145,48 @@ body {
   cursor: pointer;
 }
 
+.pencil-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
 /* ---- Nav: the original logo + bracketed buttons beside it ---- */
 .nav {
   /* pinned to the VIEWPORT top-left so it stays visible even though the
      top of the artwork gets cropped */
   position: fixed;
-  top: 4vmin;
-  left: 3.5vw;
-  z-index: 6;
+  top: clamp(18px, 3.4vmin, 34px);
+  left: clamp(18px, 3.6vw, 56px);
+  right: clamp(18px, 3.6vw, 56px);
+  z-index: 7;
   display: flex;
   align-items: center;
-  gap: 0.9ch;
+  gap: clamp(12px, 2vw, 28px);
   font-weight: 700;
-  font-size: clamp(12px, 2vmin, 20px);
-  letter-spacing: 0.05em;
+  font-size: clamp(14px, 1.55vw, 22px);
+  letter-spacing: 0.08em;
+  font-family: var(--text-font);
+  text-transform: uppercase;
 }
 
 /* logo tinted solid neon-yellow (silhouette used as a mask) — no blue */
 .nav__logo {
-  height: clamp(24px, 4vmin, 44px);
+  height: clamp(26px, 4vmin, 46px);
   aspect-ratio: 1222 / 629;
+  flex: 0 0 auto;
   display: block;
-  margin-right: 0.5ch;
   background: var(--lime);
   -webkit-mask: url(/art/logo.png) center / contain no-repeat;
   mask: url(/art/logo.png) center / contain no-repeat;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
+  flex-wrap: wrap;
 }
 
 .nav__item {
@@ -133,6 +197,7 @@ body {
   letter-spacing: inherit;
   color: var(--lime);
   padding: 0.15em 0.1em;
+  line-height: 1;
   text-shadow: 0 1px 2px rgba(29, 30, 34, 0.6);
   transition: color 0.18s ease, transform 0.18s ease;
 }
@@ -151,6 +216,75 @@ body {
 .nav__item.is-active {
   color: #ffffff;
   transform: translateY(-1px);
+}
+
+.home-hero {
+  position: fixed;
+  left: clamp(20px, 5.2vw, 86px);
+  top: clamp(124px, 17vh, 180px);
+  z-index: 6;
+  width: min(940px, calc(100vw - 40px));
+  color: var(--cream);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.44);
+}
+
+.home-hero__kicker {
+  margin: 0 0 clamp(14px, 1.8vw, 24px);
+  color: var(--lime);
+  font-family: var(--text-font);
+  font-size: clamp(12px, 1.45vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-hero__title {
+  margin: 0;
+  max-width: 15.4ch;
+  color: #ffffff;
+  font-family: var(--display-font);
+  font-size: clamp(46px, 7.5vw, 108px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.home-hero__copy {
+  margin: clamp(24px, 3vw, 38px) 0 0;
+  max-width: 38ch;
+  color: rgba(234, 230, 223, 0.88);
+  font-family: var(--text-font);
+  font-size: clamp(15px, 1.65vw, 19px);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.home-index {
+  position: fixed;
+  right: clamp(18px, 3.6vw, 56px);
+  bottom: clamp(18px, 3.4vmin, 34px);
+  z-index: 6;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: clamp(8px, 1.4vw, 18px);
+  color: rgba(234, 230, 223, 0.72);
+  font-family: var(--text-font);
+  font-size: clamp(10px, 1.05vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-index span {
+  border-top: 2px solid rgba(234, 230, 223, 0.44);
+  padding-top: 0.7em;
+  transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.home-index span.is-active {
+  color: var(--lime);
+  border-color: var(--lime);
+  transform: translateY(-3px);
 }
 
 /* ---- Loading screen (buq.ai logo) ---- */
@@ -562,6 +696,51 @@ body {
 
 /* ---- Inner-page responsive ---- */
 @media (max-width: 720px) {
+  .stage-wrap::before {
+    background: linear-gradient(
+        180deg,
+        rgba(29, 30, 34, 0.84) 0%,
+        rgba(29, 30, 34, 0.26) 42%,
+        rgba(29, 30, 34, 0.08) 100%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(29, 30, 34, 0.5) 0%,
+        rgba(29, 30, 34, 0) 34%
+      );
+  }
+  .nav {
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 12px;
+  }
+  .nav__logo {
+    height: 28px;
+    margin-top: 2px;
+  }
+  .nav__links {
+    gap: 7px;
+  }
+  .nav__item {
+    padding: 0.15em 0.1em;
+  }
+  .home-hero {
+    top: 116px;
+  }
+  .home-hero__title {
+    font-size: clamp(40px, 11.8vw, 70px);
+    max-width: 14.5ch;
+    line-height: 1.02;
+  }
+  .home-hero__copy {
+    max-width: 30ch;
+  }
+  .home-index {
+    left: 18px;
+    right: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+  }
   .about__cols {
     grid-template-columns: 1fr;
   }
