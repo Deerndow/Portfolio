@@ -26,19 +26,6 @@
       <img src="/Portfolio/art/logo.png" alt="" />
     </div>
     <div id="root"></div>
-    <script type="module">
-      const localHosts = new Set(["localhost", "127.0.0.1", ""]);
-
-      if (localHosts.has(window.location.hostname)) {
-        import("/src/main.tsx");
-      } else {
-        const styles = document.createElement("link");
-        styles.rel = "stylesheet";
-        styles.href = "/Portfolio/assets/index.css";
-        document.head.append(styles);
-
-        import("/Portfolio/assets/index.js");
-      }
-    </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
